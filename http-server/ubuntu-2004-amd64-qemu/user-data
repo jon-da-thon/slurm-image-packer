@@ -1,0 +1,72 @@
+#cloud-config
+autoinstall:
+  version: 1
+  early-commands:
+    - systemctl stop ssh
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+  apt:
+    preserve_sources_list: false
+    primary:
+      - arches: [amd64]
+        uri: "http://archive.ubuntu.com/ubuntu"
+      - arches: [default]
+        uri: "http://ports.ubuntu.com/ubuntu-ports"
+    geoip: true
+  storage:
+    version: 1
+    config:
+      - type: disk
+        id: disk0
+        ptable: msdos
+        model: QEMU_HARDDISK
+        grub_device: true
+
+      - type: partition
+        id: disk0-part1
+        number: 1
+        size: 1GB
+        device: disk0
+        flag: boot
+        name: boot_partition
+      - type: partition
+        id: disk0-part2
+        number: 2
+        size: -1
+        device: disk0
+        name: root_partition
+
+      - type: format
+        id: disk0-part1-format-boot
+        fstype: ext4
+        volume: disk0-part1
+      - type: format
+        id: disk0-part2-format-root
+        fstype: ext4
+        volume: disk0-part2
+
+      - type: mount
+        id: mount-root
+        device: disk0-part2-format-root
+        path: /
+      - type: mount
+        id: mount-boot
+        device: disk0-part1-format-boot
+        path: /boot
+  identity:
+    hostname: ubuntu
+    username: ubuntu
+    password: $6$gRLf2t8Rp/7IXd1q$O5NoldPKJs5Elnj1nx14rnR5IfhlXdxokPlsPJAHM9Aklpvz5Knrnn55A21VRVeKL18kY9ydEKcxz/5C0GJ1h0
+    # password: $6$TJb5dYGe4HCH1Lma$c/3iFkvJtxucS6.7wqnxRlXnIfk3M5XUvg2L..ZgM5weEODzFX9RXWm/8NgetFPCu4jztHmvnuN3kClBt1G8R0
+  ssh:
+    allow-pw: true
+    authorized-keys: []
+    install-server: true
+  late-commands:
+    - "echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu"
+    - "chmod 440 /target/etc/sudoers.d/ubuntu"
+    - "rm /target/etc/systemd/system/*.wants/unattended-upgrades.service"
+
+
+# vim: set ts=2 sw=2 expandtab:

@@ -1,0 +1,4 @@
+output-*
+*.vhd
+manifest*.json
+SHA256SUM*
