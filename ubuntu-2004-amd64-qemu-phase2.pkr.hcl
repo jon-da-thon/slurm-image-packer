@@ -39,12 +39,6 @@ build {
 
   provisioner "shell" {
     use_env_var_file = true
-    script          = "scripts/ubuntu-2004-amd64-qemu/phase2/provision-munge.sh"
-    execute_command = "chmod +x {{.Path}}; . {{.EnvVarFile}} && sudo -E bash {{.Path}}"
-  }
-
-  provisioner "shell" {
-    use_env_var_file = true
     script          = "scripts/ubuntu-2004-amd64-qemu/phase2/provision-slurm.sh"
     execute_command = "chmod +x {{.Path}}; . {{.EnvVarFile}} && sudo -E bash {{.Path}}"
   }

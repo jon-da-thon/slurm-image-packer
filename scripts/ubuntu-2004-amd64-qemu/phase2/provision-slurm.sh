@@ -12,22 +12,15 @@ for svc in ${DELAY_SVCS}; do
   ln -s /dev/null "/etc/systemd/system/${svc}.service"
 done
 
-### install general build deps
-apt-get update
-apt-get install -y build-essential libssl-dev libfreeipmi-dev freeipmi freeipmi-tools fakeroot devscripts equivs
+### install munge and slurm
+cd /tmp
+wget "http://${PACKER_HTTP_ADDR}/ubuntu-2004-amd64-qemu/munge-0.5.16_1.0_amd64.deb" ;
+dpkg -i munge-0.5.16_1.0_amd64.deb
+wget "http://${PACKER_HTTP_ADDR}/ubuntu-2004-amd64-qemu/slurm-24.05.3_1.0_amd64.deb" ;
+dpkg -i slurm-24.05.3_1.0_amd64.deb
 
-### install slurm
-wget https://download.schedmd.com/slurm/slurm-24.05.3.tar.bz2
-tar -xaf slurm*.tar.bz2
-cd `find  -maxdepth 1 -type d -iname "*slurm*"`
-# install debian packaging build deps
-yes | mk-build-deps -i debian/control
-# install slurm packages
-debuild -b -uc -us
-
-for svc in ${DELAY_SVCS}; do
-  ln -s /dev/null "/etc/systemd/system/${svc}.service"
-done
+### slurm config
+sleep 86400
 
 # remove masking symlinks
 for svc in ${DELAY_SVCS}; do
